@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>野球データ分析・測定サポート｜JOH BASEBALL LAB.</title>
+<meta name="description" content="高校野球・社会人野球のための野球データ分析・測定サービス。Rapsodo・Blast Motion・PitchLabを活用し、測定から分析・育成まで一貫サポート。JOH BASEBALL LAB.が、データで野球を進化させます。">
+<meta property="og:title" content="勝利を、科学する。｜JOH BASEBALL LAB.">
+<meta property="og:description" content="データで野球を進化させる。高校野球・社会人野球のための測定・分析・育成サポート。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/logo.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "JOH BASEBALL LAB.",
+  "alternateName": "JOH Vision",
+  "description": "野球データ分析・測定・育成サポート",
+  "logo": "assets/logo.png",
+  "founder": { "@type": "Person", "name": "繁昌聖人", "jobTitle": "野球データアナリスト" }
+}
+</script>
+<style>
+  /* ========== Design Tokens ========== */
+  :root {
+    --white: #ffffff;
+    --off: #f6f7f9;
+    --ink: #0b0e14;
+    --ink2: #5a6472;
+    --navy: #0a1f3d;
+    --blue: #1d6ff2;
+    --cyan: #59b8ff;
+    --line: #e4e8ee;
+    --radius: 16px;
+    --shadow: 0 8px 30px rgba(11,14,20,.06);
+    --shadow-hover: 0 16px 40px rgba(11,14,20,.12);
+    --max: 1120px;
+    --font-en: "Inter", "Helvetica Neue", sans-serif;
+    --font-jp: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-jp);
+    color: var(--ink);
+    background: var(--white);
+    line-height: 1.9;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  .en { font-family: var(--font-en); letter-spacing: -0.02em; }
+  .container { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+  /* ========== Reveal animation ========== */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease-out, transform .7s ease-out; }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .reveal[data-delay="1"] { transition-delay: .12s; }
+  .reveal[data-delay="2"] { transition-delay: .24s; }
+  .reveal[data-delay="3"] { transition-delay: .36s; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ========== Buttons ========== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 52px; padding: 0 32px; border-radius: 999px;
+    font-weight: 700; font-size: 15px; cursor: pointer; border: none;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 6px 20px rgba(29,111,242,.35); }
+  .btn-primary:hover { background: #2f7cf4; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-ghost.on-dark { color: #fff; border-color: rgba(255,255,255,.6); }
+  .btn-white { background: #fff; color: var(--navy); }
+  .link-arrow { color: var(--blue); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+  .link-arrow .arr { transition: transform .25s ease; }
+  .link-arrow:hover .arr { transform: translateX(4px); }
+
+  /* ========== Header ========== */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(255,255,255,.75);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease;
+  }
+  header.is-scrolled { border-color: var(--line); }
+  .header-inner {
+    max-width: var(--max); margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px; transition: height .3s ease;
+  }
+  header.is-scrolled .header-inner { height: 60px; }
+  .logo { font-family: var(--font-en); font-weight: 800; font-size: 17px; letter-spacing: .01em; white-space: nowrap; display: inline-flex; align-items: center; gap: 10px; }
+  .logo img { height: 48px; width: auto; display: block; }
+  header.is-scrolled .logo img { height: 40px; }
+  @media (max-width: 400px) { .logo { font-size: 14px; } .logo img { height: 40px; } }
+  .logo .dot { color: var(--blue); }
+  nav.pc-nav { display: none; gap: 32px; font-size: 14px; font-weight: 500; }
+  nav.pc-nav a { position: relative; padding: 4px 0; }
+  nav.pc-nav a::after {
+    content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px;
+    background: var(--blue); transition: width .25s ease;
+  }
+  nav.pc-nav a:hover::after { width: 100%; }
+  .header-cta { display: flex; align-items: center; gap: 12px; }
+  .btn-mini { height: 40px; padding: 0 20px; font-size: 13px; }
+  .hamburger {
+    width: 44px; height: 44px; background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px;
+  }
+  .hamburger span { width: 22px; height: 2px; background: var(--ink); transition: .3s; }
+  body.menu-open .hamburger span:nth-child(1) { transform: translateY(8px) rotate(45deg); background:#fff; }
+  body.menu-open .hamburger span:nth-child(2) { opacity: 0; }
+  body.menu-open .hamburger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background:#fff; }
+
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 90; background: var(--navy);
+    display: flex; flex-direction: column; justify-content: center; padding: 0 40px;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  body.menu-open .mobile-menu { opacity: 1; pointer-events: auto; }
+  .mobile-menu a { color: #fff; font-size: 26px; font-weight: 700; padding: 14px 0; }
+  .mobile-menu .m-label { color: var(--cyan); font-size: 12px; letter-spacing: .2em; margin-bottom: 8px; }
+
+  /* ========== Hero ========== */
+  .hero {
+    min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden; background: var(--navy); color: #fff;
+    padding: 120px 0 80px;
+  }
+  /* 測定風景写真の上にネイビーのオーバーレイを重ねて可読性を確保 */
+  .hero-photo {
+    position: absolute; inset: 0;
+    background: url("assets/photo-bullpen.jpg") center 30% / cover no-repeat;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(100deg, rgba(10,31,61,.94) 0%, rgba(10,31,61,.82) 45%, rgba(10,31,61,.55) 100%),
+      linear-gradient(180deg, rgba(10,31,61,.3) 55%, rgba(10,31,61,.92) 100%),
+      radial-gradient(ellipse 80% 60% at 70% 20%, rgba(29,111,242,.28), transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: .12;
+    background-image:
+      linear-gradient(rgba(255,255,255,.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent);
+  }
+  .hero-inner { position: relative; max-width: var(--max); margin: 0 auto; padding: 0 24px; width: 100%; }
+  .hero-label {
+    font-family: var(--font-en); font-size: 12px; letter-spacing: .3em; color: var(--cyan);
+    font-weight: 600; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 8vw, 88px); font-weight: 900; line-height: 1.25;
+    letter-spacing: .02em; margin-bottom: 24px;
+  }
+  .hero h1 .line { display: block; }
+  .hero-tagline { font-size: clamp(17px, 2.4vw, 22px); font-weight: 700; color: var(--cyan); margin-bottom: 20px; }
+  .hero-lead { font-size: 15px; color: rgba(255,255,255,.78); max-width: 560px; margin-bottom: 40px; }
+  .hero-ctas { display: flex; flex-direction: column; gap: 14px; max-width: 320px; }
+  .scroll-cue {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    font-family: var(--font-en); font-size: 10px; letter-spacing: .3em; color: rgba(255,255,255,.6);
+  }
+  .scroll-cue::after {
+    content: ""; width: 1px; height: 48px; background: linear-gradient(rgba(255,255,255,.7), transparent);
+    animation: cue 2s ease-in-out infinite;
+  }
+  @keyframes cue { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+  /* ========== Stats band ========== */
+  .stats { background: var(--ink); color: #fff; padding: 56px 0; }
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 24px; }
+  .stat .num {
+    font-family: var(--font-en); font-size: clamp(36px, 5vw, 56px); font-weight: 800;
+    color: var(--cyan); font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .stat .num small { font-size: .5em; margin-left: 2px; }
+  .stat .label { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 6px; }
+
+  /* ========== Sections common ========== */
+  section.block { padding: 96px 0; }
+  .sec-label {
+    font-family: var(--font-en); font-size: 12px; letter-spacing: .3em;
+    color: var(--blue); font-weight: 700; margin-bottom: 16px;
+  }
+  .sec-title { font-size: clamp(28px, 4.5vw, 44px); font-weight: 900; line-height: 1.4; letter-spacing: .02em; margin-bottom: 24px; }
+  .sec-lead { color: var(--ink2); max-width: 720px; }
+
+  /* ========== Problem ========== */
+  .problem { background: var(--off); }
+  .problem-grid { display: grid; gap: 40px; }
+  .ph {
+    border-radius: 12px; background: linear-gradient(135deg, #1a2433, #0a1f3d);
+    color: rgba(255,255,255,.45); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; text-align: center; padding: 16px; min-height: 260px; line-height: 1.6;
+  }
+  .problem-img {
+    width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 65% center;
+    border-radius: 12px; filter: grayscale(1) contrast(1.06); box-shadow: var(--shadow);
+  }
+  .card-img { width: 100%; height: 200px; object-fit: cover; }
+
+  /* ========== Services ========== */
+  .cards { display: grid; gap: 24px; margin-top: 48px; }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+    transition: transform .3s ease, box-shadow .3s ease;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .card .ph { min-height: 180px; border-radius: 0; }
+  .card-body { padding: 28px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .card-body h3 { font-size: 20px; font-weight: 700; }
+  .card-body p { font-size: 14px; color: var(--ink2); flex: 1; }
+  .card-num { font-family: var(--font-en); font-size: 13px; font-weight: 700; color: var(--blue); letter-spacing: .1em; }
+
+  /* ========== Gear ========== */
+  .gear { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 48px 0; }
+  .gear p { text-align: center; color: var(--ink2); font-size: 14px; margin-bottom: 24px; }
+  .chips { display: flex; gap: 12px; overflow-x: auto; padding: 4px; justify-content: flex-start; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; padding: 12px 28px; border: 1px solid var(--line); border-radius: 999px;
+    font-family: var(--font-en); font-weight: 700; font-size: 15px; color: var(--ink);
+    background: #fff;
+  }
+
+  /* ========== App (dark) ========== */
+  .app { background: linear-gradient(160deg, var(--navy) 0%, #071527 100%); color: #fff; overflow: hidden; }
+  .app-grid { display: grid; gap: 56px; align-items: center; }
+  .app .sec-label { color: var(--cyan); }
+  .app .sec-lead { color: rgba(255,255,255,.75); }
+  .app-name { font-family: var(--font-en); font-size: 15px; font-weight: 800; letter-spacing: .15em; color: var(--cyan); margin-bottom: 12px; }
+  .feature-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; margin: 28px 0 36px; padding: 0; list-style: none; }
+  .feature-list li { font-size: 13.5px; color: rgba(255,255,255,.85); display: flex; gap: 8px; align-items: baseline; }
+  .feature-list li::before { content: "＋"; color: var(--cyan); font-weight: 700; }
+  .phones { display: flex; justify-content: center; gap: 20px; }
+  .phone {
+    width: 200px; border-radius: 32px; background: #10141c; padding: 12px;
+    border: 1px solid rgba(255,255,255,.15); box-shadow: 0 30px 60px rgba(0,0,0,.5);
+  }
+  .phone .screen { border-radius: 22px; background: #171d29; overflow: hidden; }
+  .phone:nth-child(2) { transform: translateY(36px); }
+  .screen svg { display: block; width: 100%; height: auto; }
+  @media (max-width: 767px) {
+    .phones { gap: 16px; }
+    .phone { width: 40vw; max-width: 200px; padding: 8px; }
+    .phone:nth-child(2) { transform: translateY(24px); }
+  }
+
+  /* ========== Flow ========== */
+  .flow-steps { display: grid; gap: 0; margin-top: 48px; position: relative; }
+  .step { position: relative; padding: 0 0 40px 56px; }
+  .step::before {
+    content: ""; position: absolute; left: 19px; top: 8px; bottom: 0; width: 2px; background: var(--line);
+  }
+  .step:last-child::before { display: none; }
+  .step-num {
+    position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%;
+    background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-en); font-weight: 800; font-size: 14px;
+  }
+  .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: var(--ink2); }
+
+  /* ========== Works ========== */
+  .works { background: var(--off); }
+  .work-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--blue); background: rgba(29,111,242,.08); border-radius: 999px; padding: 4px 12px; margin-bottom: 12px; }
+  .work-quote { font-size: 14px; color: var(--ink2); border-left: 3px solid var(--blue); padding-left: 14px; margin-top: 14px; }
+  .work-result { font-family: var(--font-en); font-weight: 800; font-size: 24px; color: var(--navy); }
+
+  /* ========== Blog ========== */
+  .blog-meta { font-size: 12px; color: var(--ink2); display: flex; gap: 12px; align-items: center; }
+  .blog-cat { color: var(--blue); font-weight: 700; }
+
+  /* ========== CTA band ========== */
+  .cta-band {
+    background: linear-gradient(120deg, var(--navy), #143a75 60%, var(--blue));
+    color: #fff; text-align: center; padding: 96px 24px;
+  }
+  .cta-band h2 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 900; margin-bottom: 16px; line-height: 1.5; }
+  .cta-band p { color: rgba(255,255,255,.85); margin-bottom: 36px; font-size: 15px; }
+
+  /* ========== Footer ========== */
+  footer { background: var(--navy); color: rgba(255,255,255,.7); padding: 72px 0 40px; font-size: 13px; }
+  .footer-grid { display: grid; gap: 40px; margin-bottom: 56px; }
+  footer .logo { color: #fff; margin-bottom: 12px; display: inline-flex; }
+  footer .logo img { height: 64px; background: #fff; border-radius: 12px; padding: 6px 10px; }
+  .footer-col h4 { color: #fff; font-size: 13px; margin-bottom: 16px; letter-spacing: .1em; }
+  .footer-col a { display: block; padding: 6px 0; }
+  .footer-col a:hover { color: #fff; }
+  .copyright { border-top: 1px solid rgba(255,255,255,.12); padding-top: 24px; text-align: center; font-size: 11px; color: rgba(255,255,255,.4); }
+
+  /* ========== Sticky mobile CTA ========== */
+  .sticky-cta {
+    position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 80;
+    transform: translateY(120%); transition: transform .4s ease;
+  }
+  .sticky-cta.is-shown { transform: none; }
+  .sticky-cta .btn { width: 100%; box-shadow: 0 10px 30px rgba(11,14,20,.3); }
+
+  /* ========== PC layout ========== */
+  @media (min-width: 768px) {
+    section.block { padding: 160px 0; }
+    nav.pc-nav { display: flex; }
+    .hamburger { display: none; }
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    .hero-ctas { flex-direction: row; max-width: none; }
+    .problem-grid { grid-template-columns: 45% 1fr; gap: 64px; align-items: center; }
+    .cards { grid-template-columns: repeat(3, 1fr); }
+    .app-grid { grid-template-columns: 1fr 1fr; }
+    .chips { justify-content: center; }
+    .flow-steps { grid-template-columns: repeat(4, 1fr); }
+    .step { padding: 64px 24px 0 0; }
+    .step::before { left: 20px; right: -24px; top: 19px; bottom: auto; width: auto; height: 2px; }
+    .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    .sticky-cta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Header ================= -->
+<header id="header">
+  <div class="header-inner">
+    <a class="logo en" href="#"><img src="assets/logo.png" alt="JOH BASEBALL LAB."><span>JOH BASEBALL LAB<span class="dot">.</span></span></a>
+    <nav class="pc-nav">
+      <a href="#about">ABOUT</a>
+      <a href="#services">サービス</a>
+      <a href="#app">アプリ</a>
+      <a href="#works">実績</a>
+      <a href="#blog">ブログ</a>
+    </nav>
+    <div class="header-cta">
+      <a href="#contact" class="btn btn-primary btn-mini">無料相談</a>
+      <button class="hamburger" id="hamburger" aria-label="メニュー">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <p class="m-label en">MENU</p>
+  <a href="#about">ABOUT</a>
+  <a href="#services">サービス</a>
+  <a href="#app">アプリ JOH Vision</a>
+  <a href="#works">実績</a>
+  <a href="#blog">ブログ</a>
+  <a href="#contact">お問い合わせ</a>
+</div>
+
+<!-- ================= Hero ================= -->
+<section class="hero">
+  <div class="hero-photo"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <p class="hero-label reveal en">BASEBALL DATA ANALYST</p>
+    <h1 class="reveal" data-delay="1">
+      <span class="line">勝利を、</span>
+      <span class="line">科学する。</span>
+    </h1>
+    <p class="hero-tagline reveal" data-delay="2">データで野球を進化させる。</p>
+    <p class="hero-lead reveal" data-delay="2">高校野球・社会人野球のための測定・分析・育成サポート。<br>感覚を数値化し、数字をチームの武器に変えます。</p>
+    <div class="hero-ctas reveal" data-delay="3">
+      <a href="#contact" class="btn btn-primary">無料相談する</a>
+      <a href="#services" class="btn btn-ghost on-dark">サービスを見る</a>
+    </div>
+  </div>
+  <div class="scroll-cue en">SCROLL</div>
+</section>
+
+<!-- ================= Stats ================= -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat reveal"><div class="num"><span data-count="17">0</span><small>年</small></div><div class="label">野球歴</div></div>
+      <div class="stat reveal" data-delay="1"><div class="num"><span data-count="12">0</span><small>チーム</small></div><div class="label">サポート実績 ※仮</div></div>
+      <div class="stat reveal" data-delay="2"><div class="num"><span data-count="800">0</span><small>名+</small></div><div class="label">測定選手数 ※仮</div></div>
+      <div class="stat reveal" data-delay="3"><div class="num"><span data-count="50000">0</span><small>球+</small></div><div class="label">累計計測データ ※仮</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Problem ================= -->
+<section class="block problem" id="about">
+  <div class="container">
+    <div class="problem-grid">
+      <img class="problem-img reveal" src="assets/photo-bullpen.jpg" alt="室内練習場でタブレットの測定データを確認する投手とアナリスト" loading="lazy">
+      <div>
+        <p class="sec-label reveal en">WHY DATA</p>
+        <h2 class="sec-title reveal" data-delay="1">「なんとなく」の練習は、<br>もう終わりにしませんか。</h2>
+        <p class="sec-lead reveal" data-delay="2">
+          球速は上がっているのに抑えられない。振れているのに打てない。<br>
+          その原因は、感覚だけでは見えません。<br>
+          回転数、回転軸、スイング速度、打球角度——<br>
+          数字にすれば、課題は必ず特定できます。
+        </p>
+        <p class="reveal" data-delay="3" style="margin-top:28px;">
+          <a href="#services" class="link-arrow">分析でわかることを見る <span class="arr">→</span></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Services ================= -->
+<section class="block" id="services">
+  <div class="container">
+    <p class="sec-label reveal en">SERVICES</p>
+    <h2 class="sec-title reveal" data-delay="1">測定から勝利まで、<br>一気通貫。</h2>
+    <div class="cards">
+      <div class="card reveal" data-delay="1">
+        <img class="card-img" src="assets/photo-rapsodo.jpg" alt="Rapsodo計測機器とiPad" loading="lazy" style="object-position: center 55%;">
+        <div class="card-body">
+          <p class="card-num en">01 / MEASUREMENT</p>
+          <h3>測定・分析</h3>
+          <p>Rapsodo・Blast Motion・PitchLabで投打を精密測定。回転数・回転軸・スイング速度を、その日のうちに数値でフィードバックします。</p>
+          <a href="#contact" class="link-arrow">詳しく見る <span class="arr">→</span></a>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="2">
+        <div class="ph">【画像】選手への指導風景(16:9)</div>
+        <div class="card-body">
+          <p class="card-num en">02 / DEVELOPMENT</p>
+          <h3>育成サポート</h3>
+          <p>データに基づく技術指導・トレーニング提案・思考面へのアプローチ。測りっぱなしにせず、数字を成長に変えるまで伴走します。</p>
+          <a href="#contact" class="link-arrow">詳しく見る <span class="arr">→</span></a>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="3">
+        <img class="card-img" src="assets/photo-dugout.jpg" alt="ベンチでタブレットを使い試合データを記録するアナリスト" loading="lazy" style="object-position: 75% 30%;">
+        <div class="card-body">
+          <p class="card-num en">03 / GAME ANALYTICS</p>
+          <h3>チーム・試合分析</h3>
+          <p>対右対左の傾向、失点パターン、得点効率。試合データからチームの勝ち筋を設計し、ベンチワークに直結させます。</p>
+          <a href="#contact" class="link-arrow">詳しく見る <span class="arr">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Gear ================= -->
+<div class="gear">
+  <div class="container">
+    <p class="reveal">世界のトップチームが使う計測機器を、あなたのグラウンドへ。</p>
+    <div class="chips reveal" data-delay="1">
+      <span class="chip">Rapsodo</span>
+      <span class="chip">Blast Motion</span>
+      <span class="chip">PitchLab</span>
+      <span class="chip">Video Analysis</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= App ================= -->
+<section class="block app" id="app">
+  <div class="container">
+    <div class="app-grid">
+      <div>
+        <p class="app-name reveal en">JOH VISION — SELF-DEVELOPED APP</p>
+        <h2 class="sec-title reveal" data-delay="1">試合が、そのまま<br>データになる。</h2>
+        <p class="sec-lead reveal" data-delay="2">
+          自社開発・野球記録分析アプリ「JOH Vision」。<br>
+          スコアをつける感覚で入力するだけで、試合データを瞬時に分析。グラウンドのすべてを1つのアプリに。
+        </p>
+        <ul class="feature-list reveal" data-delay="2">
+          <li>直感的な入力</li><li>瞬時に分析</li>
+          <li>打撃・投球分析</li><li>対右・対左分析</li>
+          <li>打球方向・種別</li><li>ヒートマップ</li>
+          <li>チーム・個人成績</li><li>試合レポート</li>
+          <li>AI分析(開発予定)</li>
+        </ul>
+        <a href="#contact" class="btn btn-white reveal" data-delay="3">JOH Visionを詳しく見る</a>
+      </div>
+      <div class="phones reveal" data-delay="2">
+        <!-- 【画像】実機スクリーンショットが用意でき次第、以下のダミー画面を差し替え -->
+        <div class="phone">
+          <div class="screen">
+            <svg viewBox="0 0 176 360" xmlns="http://www.w3.org/2000/svg">
+              <rect width="176" height="360" fill="#171d29"/>
+              <text x="16" y="34" fill="#59b8ff" font-size="9" font-family="Inter" letter-spacing="2">HEATMAP</text>
+              <text x="16" y="52" fill="#fff" font-size="13" font-family="Inter" font-weight="700">コースヒートマップ</text>
+              <g transform="translate(28,76)">
+                <rect x="0" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".25"/>
+                <rect x="41" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".55"/>
+                <rect x="82" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".3"/>
+                <rect x="0" y="41" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".75"/>
+                <rect x="41" y="41" width="38" height="38" rx="4" fill="#59b8ff"/>
+                <rect x="82" y="41" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".5"/>
+                <rect x="0" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".2"/>
+                <rect x="41" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".6"/>
+                <rect x="82" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".35"/>
+              </g>
+              <text x="16" y="230" fill="#8b94a3" font-size="9" font-family="Inter">STRIKE %</text>
+              <rect x="16" y="240" width="144" height="8" rx="4" fill="#232b3a"/>
+              <rect x="16" y="240" width="94" height="8" rx="4" fill="#1d6ff2"/>
+              <text x="16" y="272" fill="#8b94a3" font-size="9" font-family="Inter">WHIFF %</text>
+              <rect x="16" y="282" width="144" height="8" rx="4" fill="#232b3a"/>
+              <rect x="16" y="282" width="62" height="8" rx="4" fill="#59b8ff"/>
+              <rect x="16" y="316" width="144" height="28" rx="14" fill="#1d6ff2"/>
+              <text x="88" y="334" fill="#fff" font-size="10" font-family="Inter" font-weight="700" text-anchor="middle">試合レポートを見る</text>
+            </svg>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <svg viewBox="0 0 176 360" xmlns="http://www.w3.org/2000/svg">
+              <rect width="176" height="360" fill="#171d29"/>
+              <text x="16" y="34" fill="#59b8ff" font-size="9" font-family="Inter" letter-spacing="2">BATTING</text>
+              <text x="16" y="52" fill="#fff" font-size="13" font-family="Inter" font-weight="700">打球方向・種別</text>
+              <g transform="translate(88,140)">
+                <circle r="52" fill="none" stroke="#232b3a" stroke-width="18"/>
+                <circle r="52" fill="none" stroke="#1d6ff2" stroke-width="18"
+                  stroke-dasharray="163 327" transform="rotate(-90)"/>
+                <circle r="52" fill="none" stroke="#59b8ff" stroke-width="18"
+                  stroke-dasharray="82 327" stroke-dashoffset="-163" transform="rotate(-90)"/>
+                <text y="-2" fill="#fff" font-size="16" font-family="Inter" font-weight="800" text-anchor="middle">.342</text>
+                <text y="14" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">vs LHP</text>
+              </g>
+              <g font-family="Inter" font-size="9">
+                <circle cx="24" cy="228" r="4" fill="#1d6ff2"/><text x="34" y="231" fill="#c6ccd6">ゴロ 50%</text>
+                <circle cx="24" cy="248" r="4" fill="#59b8ff"/><text x="34" y="251" fill="#c6ccd6">ライナー 25%</text>
+                <circle cx="24" cy="268" r="4" fill="#232b3a"/><text x="34" y="271" fill="#c6ccd6">フライ 25%</text>
+              </g>
+              <rect x="16" y="296" width="68" height="40" rx="8" fill="#1f2735"/>
+              <text x="50" y="313" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">AVG</text>
+              <text x="50" y="329" fill="#fff" font-size="13" font-family="Inter" font-weight="700" text-anchor="middle">.318</text>
+              <rect x="92" y="296" width="68" height="40" rx="8" fill="#1f2735"/>
+              <text x="126" y="313" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">OPS</text>
+              <text x="126" y="329" fill="#fff" font-size="13" font-family="Inter" font-weight="700" text-anchor="middle">.892</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Flow ================= -->
+<section class="block" id="flow">
+  <div class="container">
+    <p class="sec-label reveal en">HOW IT WORKS</p>
+    <h2 class="sec-title reveal" data-delay="1">導入は、驚くほどシンプル。</h2>
+    <p class="sec-lead reveal" data-delay="2">まずはオンラインで30分。チームの課題をお聞かせください。</p>
+    <div class="flow-steps">
+      <div class="step reveal"><div class="step-num">01</div><h3>無料相談</h3><p>オンラインでチームの現状と課題をヒアリング。</p></div>
+      <div class="step reveal" data-delay="1"><div class="step-num">02</div><h3>訪問測定</h3><p>機材一式を持ち込み、グラウンドで投打を測定。</p></div>
+      <div class="step reveal" data-delay="2"><div class="step-num">03</div><h3>分析レポート</h3><p>選手別・チーム別の分析結果と改善プランを提出。</p></div>
+      <div class="step reveal" data-delay="3"><div class="step-num">04</div><h3>継続サポート</h3><p>技術指導・トレーニング・再測定で成長を実装。</p></div>
+    </div>
+    <p class="reveal" style="margin-top:40px;"><a href="#contact" class="btn btn-primary">導入の流れを相談する</a></p>
+  </div>
+</section>
+
+<!-- ================= Works ================= -->
+<section class="block works" id="works">
+  <div class="container">
+    <p class="sec-label reveal en">WORKS</p>
+    <h2 class="sec-title reveal" data-delay="1">数字は、チームを変える。</h2>
+    <div class="cards">
+      <div class="card reveal" data-delay="1">
+        <div class="card-body">
+          <span class="work-tag">高校野球 ※サンプル</span>
+          <p class="work-result en">+5.2 km/h</p>
+          <h3>投手陣の平均球速向上</h3>
+          <p>回転効率の改善と球種再設計により、エースの被打率が◯◯改善。県大会◯◯進出。</p>
+          <p class="work-quote">「感覚で伝えていたことが数字で共有できるようになり、選手の取り組みが変わった」— ◯◯高校 監督</p>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="2">
+        <div class="card-body">
+          <span class="work-tag">社会人野球 ※サンプル</span>
+          <p class="work-result en">OPS +.081</p>
+          <h3>打線のデータ再編成</h3>
+          <p>対左投手への弱点をデータで特定し、打順と練習メニューを再設計。チームOPSが向上。</p>
+          <p class="work-quote">「補強なしで得点力が上がった。データの力を実感している」— ◯◯クラブ 監督</p>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="3">
+        <div class="card-body">
+          <span class="work-tag">個人サポート ※サンプル</span>
+          <p class="work-result en">2,400 rpm</p>
+          <h3>ストレートの質改善</h3>
+          <p>回転数・回転軸の測定からリリースを修正。空振り率が◯◯%向上し、進路のアピール材料に。</p>
+          <p class="work-quote">「自分の強みが数字でわかったことで、迷いなく練習できるようになった」— 投手(高3)</p>
+        </div>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:40px;"><a href="#contact" class="link-arrow">実績をすべて見る <span class="arr">→</span></a></p>
+  </div>
+</section>
+
+<!-- ================= Blog ================= -->
+<section class="block" id="blog">
+  <div class="container">
+    <p class="sec-label reveal en">NOTEBOOK</p>
+    <h2 class="sec-title reveal" data-delay="1">フィールドの数字を、言葉に。</h2>
+    <div class="cards">
+      <div class="card reveal" data-delay="1">
+        <img class="card-img" src="assets/photo-rapsodo.jpg" alt="Rapsodo計測機器" loading="lazy" style="object-position: center 20%; height: 180px;">
+        <div class="card-body">
+          <p class="blog-meta"><span class="blog-cat">機材解説</span><span>2026.07.01</span></p>
+          <h3 style="font-size:16px;">Rapsodoとは?測定項目と数値の見方をアナリストが解説</h3>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="2">
+        <div class="ph">【画像】投球フォーム写真</div>
+        <div class="card-body">
+          <p class="blog-meta"><span class="blog-cat">データの見方</span><span>2026.06.24</span></p>
+          <h3 style="font-size:16px;">高校生投手の回転数・球速の平均値と伸ばし方</h3>
+        </div>
+      </div>
+      <div class="card reveal" data-delay="3">
+        <div class="ph">【画像】スイング計測写真</div>
+        <div class="card-body">
+          <p class="blog-meta"><span class="blog-cat">育成</span><span>2026.06.17</span></p>
+          <h3 style="font-size:16px;">Blast Motionで分かるスイングの4大指標</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA band ================= -->
+<section class="cta-band" id="contact">
+  <h2 class="reveal">まずは一度、<br>チームを測ってみませんか。</h2>
+  <p class="reveal" data-delay="1">測定デモ・オンライン相談は無料です。48時間以内にご返信します。</p>
+  <a href="mailto:johbaseballlab@gmail.com" class="btn btn-white reveal" data-delay="2">無料相談を申し込む</a>
+</section>
+
+<!-- ================= Footer ================= -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <span class="logo en"><img src="assets/logo.png" alt="JOH BASEBALL LAB."><span>JOH BASEBALL LAB<span class="dot">.</span></span></span>
+        <p>データで野球を進化させる。<br>高校野球・社会人野球のための<br>測定・分析・育成サポート。</p>
+        <p style="margin-top:12px; font-size:12px; color:rgba(255,255,255,.5);">運営: JOH Vision</p>
+      </div>
+      <div class="footer-col">
+        <h4>PAGES</h4>
+        <a href="#about">ABOUT</a>
+        <a href="#services">サービス</a>
+        <a href="#app">アプリ JOH Vision</a>
+        <a href="#works">実績</a>
+      </div>
+      <div class="footer-col">
+        <h4>SUPPORT</h4>
+        <a href="#">導入メリット</a>
+        <a href="#">料金</a>
+        <a href="#">よくある質問</a>
+        <a href="#blog">ブログ</a>
+      </div>
+      <div class="footer-col">
+        <h4>CONTACT</h4>
+        <a href="#contact">お問い合わせ</a>
+        <a href="#contact">無料相談</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="terms.html">利用規約</a>
+      </div>
+    </div>
+    <p class="copyright en">© 2026 JOH BASEBALL LAB. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ================= Sticky mobile CTA ================= -->
+<div class="sticky-cta" id="stickyCta">
+  <a href="#contact" class="btn btn-primary">無料相談する</a>
+</div>
+
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Count-up numbers
+  const counterIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.count, dur = 1200, t0 = performance.now();
+      const fmt = n => n.toLocaleString('ja-JP');
+      (function tick(t) {
+        const p = Math.min((t - t0) / dur, 1);
+        el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+      counterIo.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => counterIo.observe(el));
+
+  // Header state + sticky CTA
+  const header = document.getElementById('header');
+  const sticky = document.getElementById('stickyCta');
+  addEventListener('scroll', () => {
+    header.classList.toggle('is-scrolled', scrollY > 10);
+    sticky.classList.toggle('is-shown', scrollY > innerHeight * 0.6);
+  }, { passive: true });
+
+  // Mobile menu
+  const burger = document.getElementById('hamburger');
+  burger.addEventListener('click', () => document.body.classList.toggle('menu-open'));
+  document.querySelectorAll('.mobile-menu a').forEach(a =>
+    a.addEventListener('click', () => document.body.classList.remove('menu-open')));
+</script>
+</body>
+</html>
