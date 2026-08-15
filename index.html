@@ -262,7 +262,7 @@
   }
   .phone .screen { border-radius: 22px; background: #171d29; overflow: hidden; }
   .phone:nth-child(2) { transform: translateY(36px); }
-  .screen svg { display: block; width: 100%; height: auto; }
+  .screen svg, .screen img { display: block; width: 100%; height: auto; }
   @media (max-width: 767px) {
     .phones { gap: 16px; }
     .phone { width: 40vw; max-width: 200px; padding: 8px; }
@@ -497,62 +497,14 @@
         <a href="#contact" class="btn btn-white reveal" data-delay="3">JOH Visionを詳しく見る</a>
       </div>
       <div class="phones reveal" data-delay="2">
-        <!-- 【画像】実機スクリーンショットが用意でき次第、以下のダミー画面を差し替え -->
         <div class="phone">
           <div class="screen">
-            <svg viewBox="0 0 176 360" xmlns="http://www.w3.org/2000/svg">
-              <rect width="176" height="360" fill="#171d29"/>
-              <text x="16" y="34" fill="#59b8ff" font-size="9" font-family="Inter" letter-spacing="2">HEATMAP</text>
-              <text x="16" y="52" fill="#fff" font-size="13" font-family="Inter" font-weight="700">コースヒートマップ</text>
-              <g transform="translate(28,76)">
-                <rect x="0" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".25"/>
-                <rect x="41" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".55"/>
-                <rect x="82" y="0" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".3"/>
-                <rect x="0" y="41" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".75"/>
-                <rect x="41" y="41" width="38" height="38" rx="4" fill="#59b8ff"/>
-                <rect x="82" y="41" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".5"/>
-                <rect x="0" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".2"/>
-                <rect x="41" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".6"/>
-                <rect x="82" y="82" width="38" height="38" rx="4" fill="#1d6ff2" opacity=".35"/>
-              </g>
-              <text x="16" y="230" fill="#8b94a3" font-size="9" font-family="Inter">STRIKE %</text>
-              <rect x="16" y="240" width="144" height="8" rx="4" fill="#232b3a"/>
-              <rect x="16" y="240" width="94" height="8" rx="4" fill="#1d6ff2"/>
-              <text x="16" y="272" fill="#8b94a3" font-size="9" font-family="Inter">WHIFF %</text>
-              <rect x="16" y="282" width="144" height="8" rx="4" fill="#232b3a"/>
-              <rect x="16" y="282" width="62" height="8" rx="4" fill="#59b8ff"/>
-              <rect x="16" y="316" width="144" height="28" rx="14" fill="#1d6ff2"/>
-              <text x="88" y="334" fill="#fff" font-size="10" font-family="Inter" font-weight="700" text-anchor="middle">試合レポートを見る</text>
-            </svg>
+            <img src="assets/app-input.png" alt="JOH Vision 投球入力画面" loading="lazy">
           </div>
         </div>
         <div class="phone">
           <div class="screen">
-            <svg viewBox="0 0 176 360" xmlns="http://www.w3.org/2000/svg">
-              <rect width="176" height="360" fill="#171d29"/>
-              <text x="16" y="34" fill="#59b8ff" font-size="9" font-family="Inter" letter-spacing="2">BATTING</text>
-              <text x="16" y="52" fill="#fff" font-size="13" font-family="Inter" font-weight="700">打球方向・種別</text>
-              <g transform="translate(88,140)">
-                <circle r="52" fill="none" stroke="#232b3a" stroke-width="18"/>
-                <circle r="52" fill="none" stroke="#1d6ff2" stroke-width="18"
-                  stroke-dasharray="163 327" transform="rotate(-90)"/>
-                <circle r="52" fill="none" stroke="#59b8ff" stroke-width="18"
-                  stroke-dasharray="82 327" stroke-dashoffset="-163" transform="rotate(-90)"/>
-                <text y="-2" fill="#fff" font-size="16" font-family="Inter" font-weight="800" text-anchor="middle">.342</text>
-                <text y="14" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">vs LHP</text>
-              </g>
-              <g font-family="Inter" font-size="9">
-                <circle cx="24" cy="228" r="4" fill="#1d6ff2"/><text x="34" y="231" fill="#c6ccd6">ゴロ 50%</text>
-                <circle cx="24" cy="248" r="4" fill="#59b8ff"/><text x="34" y="251" fill="#c6ccd6">ライナー 25%</text>
-                <circle cx="24" cy="268" r="4" fill="#232b3a"/><text x="34" y="271" fill="#c6ccd6">フライ 25%</text>
-              </g>
-              <rect x="16" y="296" width="68" height="40" rx="8" fill="#1f2735"/>
-              <text x="50" y="313" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">AVG</text>
-              <text x="50" y="329" fill="#fff" font-size="13" font-family="Inter" font-weight="700" text-anchor="middle">.318</text>
-              <rect x="92" y="296" width="68" height="40" rx="8" fill="#1f2735"/>
-              <text x="126" y="313" fill="#8b94a3" font-size="8" font-family="Inter" text-anchor="middle">OPS</text>
-              <text x="126" y="329" fill="#fff" font-size="13" font-family="Inter" font-weight="700" text-anchor="middle">.892</text>
-            </svg>
+            <img src="assets/app-analysis.png" alt="JOH Vision 試合分析ダッシュボード画面" loading="lazy">
           </div>
         </div>
       </div>
@@ -631,7 +583,7 @@
         <div class="ph">【画像】投球フォーム写真</div>
         <div class="card-body">
           <p class="blog-meta"><span class="blog-cat">データの見方</span><span>2026.06.24</span></p>
-          <h3 style="font-size:16px;">高校生投手の回転数・球速の平均値と伸ばし方</h3>
+          <h3 style="font-size:16px;">投手の特徴を活かしたピッチデザイン</h3>
         </div>
       </div>
       <div class="card reveal" data-delay="3">
